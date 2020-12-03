@@ -9,7 +9,25 @@ use std::io::{self, prelude::*, BufReader};
 
 fn main() -> io::Result<()> {
     run_unit_test();
+    return run_input();
+}
 
+fn run_unit_test() {
+    let test_input: [&str; 3] = ["1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"];
+    let mut test_results_1 = Vec::new();
+    let mut test_results_2 = Vec::new();
+
+    for input in test_input.iter() {
+        let password = &parse(input);
+        test_results_1.push(check_v1(password));
+        test_results_2.push(check_v2(password));
+    }
+
+    assert_eq!(test_results_1, [true, false, true]);
+    assert_eq!(test_results_2, [true, false, false]);
+}
+
+fn run_input() -> io::Result<()> {
     let mut total = 0;
 
     let file = File::open("input")?;
@@ -28,21 +46,6 @@ fn main() -> io::Result<()> {
 
     println!("Total valid passwords: {}", total);
     return Ok(());
-}
-
-fn run_unit_test() {
-    let test_input: [&str; 3] = ["1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"];
-    let mut test_results_1 = Vec::new();
-    let mut test_results_2 = Vec::new();
-
-    for input in test_input.iter() {
-        let password = &parse(input);
-        test_results_1.push(check_v1(password));
-        test_results_2.push(check_v2(password));
-    }
-
-    assert_eq!(test_results_1, [true, false, true]);
-    assert_eq!(test_results_2, [true, false, false]);
 }
 
 struct Policy {
