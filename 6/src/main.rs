@@ -11,40 +11,49 @@ fn main() -> io::Result<()> {
     let file = File::open("input")?;
     let reader = BufReader::new(file);
 
-    for line in reader.lines() {
-        let line_string = line.unwrap();
-        if line_string == "" {
-            results.push(Group {
-                size: size,
-                answers: answers.clone(),
-            });
-            size = 0;
-            answers.clear();
-            continue;
-        }
+    let mut iter = reader.lines();
+    loop {
+        match iter.next() {
+            Some(v) => {
+                let line = v.unwrap();
+                if line == "" {
+                    results.push(Group {
+                        size: size,
+                        answers: answers.clone(),
+                    });
+                    size = 0;
+                    answers.clear();
+                    continue;
+                }
 
-        size += 1;
-        for c in line_string.chars() {
-            if answers.contains_key(&c) {
-                *answers.get_mut(&c).unwrap() += 1;
-            } else {
-                answers.insert(c, 1);
+                size += 1;
+                for c in line.chars() {
+                    if answers.contains_key(&c) {
+                        *answers.get_mut(&c).unwrap() += 1;
+                    } else {
+                        answers.insert(c, 1);
+                    }
+                }
+            }
+
+            None => {
+                // when input runs out, catch the final result
+                results.push(Group {
+                    size: size,
+                    answers: answers.clone(),
+                });
+
+                break;
             }
         }
     }
 
-    // push final answer group
-    results.push(Group {
-        size: size,
-        answers: answers.clone(),
-    });
-
-    // part 1 anyone answered yes
+    // part 1 count answers where anyone answered yes
     let sum_any: usize = results.iter().map(|result| result.answers.len()).sum();
     println!("Sum of any counts = {}", sum_any);
     assert_eq!(sum_any, 6625);
 
-    // part 1 everyone answered yes
+    // part 2 count answers where everyone answered yes
     let mut sum_all = 0;
     for group in results {
         for (_, size) in group.answers.into_iter() {
@@ -60,6 +69,6 @@ fn main() -> io::Result<()> {
 }
 
 struct Group {
-    size: usize,
-    answers: HashMap<char, usize>,
+    size: usize,                   // group size
+    answers: HashMap<char, usize>, // map of answer and number of times it was given
 }
