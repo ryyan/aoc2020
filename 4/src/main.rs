@@ -32,24 +32,32 @@ fn parse_input() -> io::Result<Vec<Passport>> {
     let file = File::open("input")?;
     let reader = BufReader::new(file);
 
-    for line in reader.lines() {
-        let line_string = line.unwrap();
-        if line_string == "" {
-            result.push(Passport {
-                fields: fields.clone(),
-            });
+    let mut iter = reader.lines();
+    loop {
+        match iter.next() {
+            Some(v) => {
+                let line = v.unwrap();
+                if line == "" {
+                    result.push(Passport {
+                        fields: fields.clone(),
+                    });
 
-            fields.clear();
-            continue;
+                    fields.clear();
+                    continue;
+                }
+
+                parse_line(line, &mut fields);
+            }
+            None => {
+                // push final passport
+                result.push(Passport {
+                    fields: fields.clone(),
+                });
+
+                break;
+            }
         }
-
-        parse_line(line_string, &mut fields);
     }
-
-    // push final passport since reader.lines() doesn't return final newline
-    result.push(Passport {
-        fields: fields.clone(),
-    });
 
     return Ok(result);
 }
