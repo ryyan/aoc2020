@@ -51,11 +51,11 @@ fn main() -> io::Result<()> {
             );
             assert_eq!(accumlator, 1033);
             assert_eq!(position, 626);
-            break;
+            return Ok(());
         }
     }
 
-    return Ok(());
+    panic!("should have gotten program terminated");
 }
 
 #[derive(Clone, Debug)]
