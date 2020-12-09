@@ -8,6 +8,10 @@ fn main() -> io::Result<()> {
 
     // part 1 what's the accumulator value before any instruction is executed a second time
     let (accumlator, position) = run(&instructions);
+    println!(
+        "Program started infinite loop with accumlator at {} and at position {}",
+        accumlator, position
+    );
     assert_eq!(accumlator, 1317);
     assert_eq!(position, 600);
 
@@ -15,6 +19,7 @@ fn main() -> io::Result<()> {
     for i in 0..instructions.len() {
         let new_instruction: Instruction;
 
+        // determine new instruction
         let instruction = instructions.get(i).unwrap();
         match instruction.operation.as_str() {
             "jmp" => {
@@ -32,12 +37,18 @@ fn main() -> io::Result<()> {
             _ => continue,
         }
 
+        // replace instruction
         let mut new_instructions = instructions.clone();
         new_instructions.insert(i, new_instruction);
         new_instructions.remove(i + 1);
+
         let (accumlator, position) = run(&new_instructions);
 
-        if position > instructions.len() {
+        if position >= instructions.len() {
+            println!(
+                "Program terminated successfully with accumlator at {} and at position {}",
+                accumlator, position
+            );
             assert_eq!(accumlator, 1033);
             assert_eq!(position, 626);
             break;
@@ -87,7 +98,6 @@ fn run(instructions: &Vec<Instruction>) -> (isize, usize) {
 
         // check if current position is past the number of instructions (program terminated)
         if position >= instructions.len() {
-            println!("Program terminated successfully!");
             return (accumulator, position);
         }
 
